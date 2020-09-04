@@ -24,7 +24,7 @@ gam_engine <- function(data,severity){
   
   # Extract R squared for use in graph
   
-  r_sq <- paste0("R squared: ",round((abs(summary(model)$r.sq))*100, digits = 2),"%")
+  r_sq <- paste0("Estimated R squared: ",round((abs(summary(model)$r.sq))*100, digits = 2),"%")
   
   # Get fitted values
   
