@@ -50,7 +50,8 @@ d2 <- d %>%
           crash_month_short == "Dec" ~ 12)) %>%
   group_by(crash_date, crash_month_int, year, crash_severity) %>%
   summarise(counter = n()) %>%
-  ungroup()
+  ungroup() %>%
+  mutate(date_num = as.numeric(crash_date)/1000)
 
 # Remove massive file from environment
 

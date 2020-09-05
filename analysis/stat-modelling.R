@@ -18,14 +18,16 @@ gam_engine <- function(data,severity){
   
   # Fit GAM
   
-  model <- gam(counter ~ s(crash_month_int, k = c(12), bs = "cr") + 
-                         s(year, k = c(length(unique(tmp1$year))), bs = "ps"),
+  model <- gamm(counter ~ s(crash_month_int, k = c(12), bs = "cc") + 
+                          s(date_num),
                data = tmp1,
                family = poisson)
   
+  print(summary(model$gam))
+  
   # Extract R squared for use in graph
   
-  r_sq <- paste0("Estimated R squared: ",round((abs(summary(model)$r.sq))*100, digits = 2),"%")
+  r_sq <- paste0("Estimated R squared: ",round((abs(summary(model$gam)$r.sq))*100, digits = 2),"%")
   
   # Get fitted values
   
@@ -33,7 +35,7 @@ gam_engine <- function(data,severity){
     mutate(type = "Raw Data") %>%
     dplyr::select(c(counter, type, crash_date))
   
-  tmp3 <- data.frame(counter = model$fitted.values) %>%
+  tmp3 <- data.frame(counter = model$gam$fitted.values) %>%
     mutate(type = "GAM") %>%
     mutate(crash_date = tmp1$crash_date)
   
