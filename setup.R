@@ -27,7 +27,7 @@ options(scipen = 999)
 
 if(!dir.exists('output')) dir.create('output')
 
-# Run processing script to prep data for Bayesian modelling
+# Run processing script to prep data for modelling
 
 r_files <- list.files("processing", full.names = TRUE, pattern = "\\.[Rr]")
 for(f in r_files){
