@@ -124,6 +124,7 @@ m2.dsig <- signifD(ci_ar_4$p2, d = m2.d[[Term]]$deriv, m2.dci[[Term]]$upper, m2.
 sig_data <- data.frame(date_num = ci_ar_4$date_num,
                        incr = unlist(m2.dsig$incr),
                        decr = unlist(m2.dsig$decr))
+
 CairoPNG("output/deriv-ar4.png", 800, 600)
 deriv_plot <- ci_ar_4 %>%
   ggplot() +
