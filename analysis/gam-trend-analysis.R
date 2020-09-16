@@ -2,6 +2,9 @@
 # This script sets out to compute periods
 # of significant change using derivatives
 # for the minor injury GAM model
+#
+# NOTE: This script requires setup.R to
+# have been run first
 #------------------------------------------
 
 #-------------------------------------------
