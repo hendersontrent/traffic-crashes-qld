@@ -15,64 +15,51 @@ ts_cleaner <- function(data) {
   
   tmp1 <- data %>%
   mutate(crash_month_short = substr(crash_month, start = 1, stop = 3)) %>%
-  mutate(crash_date = paste0("01-",crash_month_short,"-",crash_year)) %>%
-  mutate(crash_date = as.Date(crash_date, format = "%d-%b-%Y")) %>%
-  mutate(year = gsub("-.*", "\\1", crash_date)) %>%
-  mutate(year = as.numeric(year)) %>%
-  mutate(crash_month_int = case_when(
-    crash_month_short == "Jan" ~ 1,
-    crash_month_short == "Feb" ~ 2,
-    crash_month_short == "Mar" ~ 3,
-    crash_month_short == "Apr" ~ 4,
-    crash_month_short == "May" ~ 5,
-    crash_month_short == "Jun" ~ 6,
-    crash_month_short == "Jul" ~ 7,
-    crash_month_short == "Aug" ~ 8,
-    crash_month_short == "Sep" ~ 9,
-    crash_month_short == "Oct" ~ 10,
-    crash_month_short == "Nov" ~ 11,
-    crash_month_short == "Dec" ~ 12))
+  mutate(crash_date = paste0("01-", crash_month_short,"-", crash_year)) %>%
+  mutate(crash_date = as.Date(crash_date, format = "%d-%b-%Y"))
+  
+  # Convert date information to numerics for more accurate modelling
+  
+  tmp2 <- transform(tmp1, ndate = as.numeric(crash_date),
+                    nyear = as.numeric(format(crash_date, '%Y')),
+                    nmonth = as.numeric(format(crash_date, '%m')))
   
   # Individual aggregations
   
-  hospital <- tmp1 %>%
+  hospital <- tmp2 %>%
     filter(crash_severity == "Hospitalisation") %>%
-    group_by(crash_date, crash_month_int, year, crash_severity) %>%
+    group_by(ndate, nyear, nmonth, crash_severity, crash_date) %>%
     summarise(value = sum(count_casualty_hospitalised)) %>%
-    ungroup() %>%
-    mutate(date_num = as.numeric(crash_date)/1000)
+    ungroup()
   
-  fatal <- tmp1 %>%
+  fatal <- tmp2 %>%
     filter(crash_severity == "Fatal") %>%
-    group_by(crash_date, crash_month_int, year, crash_severity) %>%
+    group_by(ndate, nyear, nmonth, crash_severity, crash_date) %>%
     summarise(value = sum(count_casualty_fatality)) %>%
-    ungroup() %>%
-    mutate(date_num = as.numeric(crash_date)/1000)
+    ungroup()
   
-  min_inj <- tmp1 %>%
+  min_inj <- tmp2 %>%
     filter(crash_severity == "Minor injury") %>%
-    group_by(crash_date, crash_month_int, year, crash_severity) %>%
+    group_by(ndate, nyear, nmonth, crash_severity, crash_date) %>%
     summarise(value = sum(count_casualty_minor_injury)) %>%
-    ungroup() %>%
-    mutate(date_num = as.numeric(crash_date)/1000)
+    ungroup()
   
-  medical <- tmp1 %>%
+  medical <- tmp2 %>%
     filter(crash_severity == "Medical treatment") %>%
-    group_by(crash_date, crash_month_int, year, crash_severity) %>%
+    group_by(ndate, nyear, nmonth, crash_severity, crash_date) %>%
     summarise(value = sum(count_casualty_medically_treated)) %>%
-    ungroup() %>%
-    mutate(date_num = as.numeric(crash_date)/1000)
+    ungroup()
   
   # Bind all together and return it
   
-  tmp2 <- bind_rows(hospital, fatal, min_inj, medical)
+  tmp3 <- bind_rows(hospital, fatal, min_inj, medical)
   
-  return(tmp2)
+  return(tmp3)
 }
 
 # Aggregate data for statistical modelling
 
-model_cleaner <- function(data) {
+model_cleaner <- function(data, data2) {
   
   # High level
   
@@ -111,7 +98,8 @@ model_cleaner <- function(data) {
   
   # Bind all together and return it
   
-  tmp2 <- bind_rows(hospital, fatal, min_inj, medical)
+  tmp2 <- bind_rows(hospital, fatal, min_inj, medical) %>%
+    left_join(data2, by = c("loc_post_code" = "postcode"))
   
   return(tmp2)
 }
