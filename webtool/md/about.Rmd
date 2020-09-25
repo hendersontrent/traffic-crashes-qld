@@ -1,0 +1,38 @@
+## QLD Traffic Crash Statisical Modelling Tool
+***
+
+### What is this application?
+
+This is a web application created to enable interactive statistical modelling of traffic crash data from the [Queensland Department of Transport and Main Roads](https://www.data.qld.gov.au/dataset/crash-data-from-queensland-roads).
+
+
+### How do I use it?
+
+Navigate through the app using the tabs at the top. Further details and instructions are provided on each tab. A high level overview of what each does presented below:
+
+* __STATISTICAL MODELLING__ Presents user-driven statistical analysis and modelling of time-series and cross-sectional data. Modelling is primarily centred around the use of [Generalised Additive Models](https://en.wikipedia.org/wiki/Generalized_additive_model#:~:text=In%20statistics%2C%20a%20generalized%20additive,inference%20about%20these%20smooth%20functions.).
+
+### What do I need to be aware of?
+
+This tool is not intended to provide advice or supplement careful hypothesis-driven analysis. It currently acts primarily as a functional data visualisation and model exploration tool. The time series section in particular is an ongoing work-in-progress with adjustments being made on a frequent basis and re-pushed to this same URL.
+
+
+### Who made it?
+
+This application was built by Trent Henderson of [Orbisant Analytics](https://www.orbisantanalytics.com/). Trent is a data scientist from Brisbane, Australia, and can be found on Twitter [@trentlikesstats](https://twitter.com/trentlikesstats) or by [email](trent.henderson1@outlook.com).
+
+
+### Where did the data come from?
+
+All data is sourced from the [Queensland Department of Transport and Main Roads](https://www.data.qld.gov.au/dataset/crash-data-from-queensland-roads).
+
+
+### How can I log an issue or contribute?
+
+If you have a GitHub account, you can log an issue or contribute to application development at the [repository](https://github.com/hendersontrent/traffic-crashes-qld).
+
+### What are the future plans for the application?
+
+* Include more statistical models and model comparisons
+* Specify more robust and detailed time series models
+* Switch to more interactive plotting features (i.e. JavaScript-communicating libraries such as [Plotly](https://plotly.com/)).

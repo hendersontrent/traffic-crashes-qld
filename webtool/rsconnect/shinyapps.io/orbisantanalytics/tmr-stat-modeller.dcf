@@ -1,0 +1,12 @@
+name: tmr-stat-modeller
+title: tmr-stat-modeller
+username:
+account: orbisantanalytics
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2887513
+bundleId: 3670096
+url: https://orbisantanalytics.shinyapps.io/tmr-stat-modeller/
+when: 1601038895.96298
+asMultiple: FALSE
+asStatic: FALSE

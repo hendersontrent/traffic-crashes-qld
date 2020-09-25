@@ -14,3 +14,7 @@
 data/*.csv
 data/*.xlsx
 data/*.xls
+
+webtool/data/*.csv
+webtool/data/*.xlsx
+webtool/data/*.xls
