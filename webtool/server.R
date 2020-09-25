@@ -57,7 +57,7 @@ shinyServer <- function(input, output, session) {
   
   # Extract trend component
   
-  output$ts_gam_trend <- renderPlot({
+  output$ts_gam_trend <- renderPlotly({
     
     tmp1 <- d1 %>%
       filter(crash_severity == input$ts_severity)
@@ -87,14 +87,17 @@ shinyServer <- function(input, output, session) {
             panel.background = element_rect(fill = alpha("white", 0.2)),
             plot.background = element_rect(fill = alpha("white", 0.2)),
             legend.background = element_rect(fill = alpha("white", 0.2)))
-    print(p)
     
-  },
-  bg = "transparent")
+    ggplotly(p) %>%
+      layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
+             paper_bgcolor = "rgba(255, 255, 255, 0.2)") %>%
+      config(displayModeBar = F)
+    
+  })
   
   # Extract seasonality component
   
-  output$ts_gam_seas <- renderPlot({
+  output$ts_gam_seas <- renderPlotly({
     
     tmp1 <- d1 %>%
       filter(crash_severity == input$ts_severity)
@@ -122,10 +125,13 @@ shinyServer <- function(input, output, session) {
             panel.background = element_rect(fill = alpha("white", 0.2)),
             plot.background = element_rect(fill = alpha("white", 0.2)),
             legend.background = element_rect(fill = alpha("white", 0.2)))
-    print(p)
     
-  },
-  bg = "transparent")
+    ggplotly(p) %>%
+      layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
+             paper_bgcolor = "rgba(255, 255, 255, 0.2)") %>%
+      config(displayModeBar = F)
+    
+  })
   
   #-------------------
   # FORECAST
@@ -164,7 +170,7 @@ shinyServer <- function(input, output, session) {
   
   # Model plots
   
-  output$pop_plot <- renderPlot({
+  output$pop_plot <- renderPlotly({
     
     tmp1 <- d2 %>%
       filter(year == input$cs_year) %>%
@@ -193,12 +199,15 @@ shinyServer <- function(input, output, session) {
             panel.background = element_rect(fill = alpha("white", 0.2)),
             plot.background = element_rect(fill = alpha("white", 0.2)),
             legend.background = element_rect(fill = alpha("white", 0.2)))
-    print(p)
     
-  },
-  bg = "transparent")
+    ggplotly(p) %>%
+      layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
+             paper_bgcolor = "rgba(255, 255, 255, 0.2)") %>%
+      config(displayModeBar = F)
+    
+  })
   
-  output$ses_plot <- renderPlot({
+  output$ses_plot <- renderPlotly({
     
     tmp1 <- d2 %>%
       filter(year == input$cs_year) %>%
@@ -226,12 +235,15 @@ shinyServer <- function(input, output, session) {
             panel.background = element_rect(fill = alpha("white", 0.2)),
             plot.background = element_rect(fill = alpha("white", 0.2)),
             legend.background = element_rect(fill = alpha("white", 0.2)))
-    print(p)
     
-  },
-  bg = "transparent")
+    ggplotly(p) %>%
+      layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
+             paper_bgcolor = "rgba(255, 255, 255, 0.2)") %>%
+      config(displayModeBar = F)
+    
+  })
   
-  output$ra_plot <- renderPlot({
+  output$ra_plot <- renderPlotly({
     
     tmp1 <- d2 %>%
       filter(year == input$cs_year) %>%
@@ -265,10 +277,13 @@ shinyServer <- function(input, output, session) {
             panel.background = element_rect(fill = alpha("white", 0.2)),
             plot.background = element_rect(fill = alpha("white", 0.2)),
             legend.background = element_rect(fill = alpha("white", 0.2)))
-    print(p)
     
-  },
-  bg = "transparent")
+    ggplotly(p) %>%
+      layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
+             paper_bgcolor = "rgba(255, 255, 255, 0.2)") %>%
+      config(displayModeBar = F)
+    
+  })
   
   output$tidy_table <- renderTable({
     

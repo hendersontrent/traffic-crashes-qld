@@ -25,7 +25,9 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                      selectInput("cs_year", "Select a year",
                                                                  choices = years, selected = years[8]),
                                                      selectInput("cs_severity", "Select a crash severity",
-                                                                 choices = severities, selected = severities[1])
+                                                                 choices = severities, selected = severities[1]),
+                                                     br(),
+                                                     p("Click on and hover over the graphs with your mouse to interact with them.")
                                                    ),
                                                    mainPanel(
                                                      fluidRow(
@@ -37,19 +39,19 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                               br(),
                                                               column(5,
                                                                      h4("Usual Resident Population"),
-                                                                     shinycssloaders::withSpinner(plotOutput("pop_plot", height = "450px"))
+                                                                     shinycssloaders::withSpinner(plotlyOutput("pop_plot", height = "450px"))
                                                                      ),
                                                               column(1),
                                                               column(5,
                                                                      h4("SEIFA Index of Occupation Education"),
-                                                                     shinycssloaders::withSpinner(plotOutput("ses_plot", height = "450px"))
+                                                                     shinycssloaders::withSpinner(plotlyOutput("ses_plot", height = "450px"))
                                                        )
                                                       )
                                                      ),
                                                      br(),
                                                      fluidRow(
                                                        column(10,
-                                                              shinycssloaders::withSpinner(plotOutput("ra_plot", height = "450px"))
+                                                              shinycssloaders::withSpinner(plotlyOutput("ra_plot", height = "450px"))
                                                        )
                                                      ),
                                                      hr(),
@@ -76,12 +78,13 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                             sidebarPanel(
                                               h2("Page Details"),
                                               selectInput("ts_severity", "Select a crash severity",
-                                                          choices = severities, selected = severities[3])
+                                                          choices = severities, selected = severities[3]),
+                                              br(),
+                                              p("Click on and hover over the graphs with your mouse to interact with them.")
                                             ),
                                             mainPanel(
                                               fluidRow(column(11,
                                                               h3("Raw Time Series Data"),
-                                                              p("Click on and hover over the graph with your mouse to interact with it."),
                                                               br(),
                                                               shinycssloaders::withSpinner(plotlyOutput("raw_ts", height = "450px")),
                                                               br()
@@ -98,12 +101,12 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                               br(),
                                                       column(5,
                                                              h4("Trend Component"),
-                                                             shinycssloaders::withSpinner(plotOutput("ts_gam_trend", height = "450px"))
+                                                             shinycssloaders::withSpinner(plotlyOutput("ts_gam_trend", height = "450px"))
                                               ),
                                                       column(1),
                                                       column(5,
                                                              h4("Seasonal Component"),
-                                                             shinycssloaders::withSpinner(plotOutput("ts_gam_seas", height = "450px"))
+                                                             shinycssloaders::withSpinner(plotlyOutput("ts_gam_seas", height = "450px"))
                                               )
                                              ),
                                              br(),
