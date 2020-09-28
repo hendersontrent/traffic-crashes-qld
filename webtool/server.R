@@ -319,4 +319,126 @@ shinyServer <- function(input, output, session) {
     
   })
   
+  #------------------------ MAP ----------------------------------
+  
+  # Define palette function for use with map 
+  
+  pal_fun <- colorNumeric("Spectral", NULL, na.color = "grey", reverse = TRUE)
+  
+  # Need the reverse of the palette function as the only way to do the legend in reverse order
+  
+  pal_fun_leg <- colorNumeric("Spectral", NULL, na.color = "grey", reverse = FALSE)
+  
+  # Prep map data
+  
+  the_map_data <- reactive({
+    
+    if(input$map_geog == "Postcode"){
+      the_map_data <- post_1 %>%
+        filter(crash_year == input$map_year) %>%
+        filter(crash_severity == input$map_severity)
+    } else if (input$map_geog == "SA2"){
+      the_map_data <- sa2_2 %>%
+        filter(crash_year == input$map_year) %>%
+        filter(crash_severity == input$map_severity)
+    } else if (input$map_geog == "SA3"){
+      the_map_data <- sa3_3 %>%
+        filter(crash_year == input$map_year) %>%
+        filter(crash_severity == input$map_severity)
+    } else{
+      the_map_data <- sa4_4 %>%
+        filter(crash_year == input$map_year) %>%
+        filter(crash_severity == input$map_severity)
+    }
+    return(the_map_data)
+  })
+  
+  # Render map
+  
+  output$map <- renderLeaflet({
+    
+    leaflet() %>%
+      setView(lng = 142.702789, lat = -20.917574, zoom = 5) %>%
+      addTiles()
+  })
+  
+  observe({
+    
+    if(input$map_geog == "Postcode"){
+      leafletProxy("map",
+                   data = the_map_data()) %>%
+        clearShapes() %>%
+        addPolygons(fillColor = ~pal_fun(value),
+                    fillOpacity = 0.8,
+                    layerId = ~POA_NAME16,
+                    stroke = TRUE,
+                    color = "grey20",
+                    label = paste0("Postcode: ",the_map_data()$POA_NAME16, " ", "Crash Count: ", 
+                                   the_map_data()$value)) %>%
+        clearControls() %>%
+        addLegend(pal = pal_fun_leg,
+                  values = ~value,
+                  position = "bottomright",
+                  opacity = 0.8,
+                  title = "",
+                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
+    } else if (input$map_geog == "SA2"){
+      leafletProxy("map",
+                   data = the_map_data()) %>%
+        clearShapes() %>%
+        addPolygons(fillColor = ~pal_fun(value),
+                    fillOpacity = 0.8,
+                    layerId = ~loc_abs_statistical_area_2,
+                    stroke = TRUE,
+                    color = "grey20",
+                    label = paste0("SA2: ", the_map_data()$loc_abs_statistical_area_2, " ", "Crash Count: ", 
+                                   the_map_data()$value)) %>%
+        clearControls() %>%
+        addLegend(pal = pal_fun_leg,
+                  values = ~value,
+                  position = "bottomright",
+                  opacity = 0.8,
+                  title = "",
+                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
+    } else if (input$map_geog == "SA3"){
+      leafletProxy("map",
+                   data = the_map_data()) %>%
+        clearShapes() %>%
+        addPolygons(fillColor = ~pal_fun(value),
+                    fillOpacity = 0.8,
+                    layerId = ~loc_abs_statistical_area_3,
+                    stroke = TRUE,
+                    color = "grey20",
+                    label = paste0("SA3: ", the_map_data()$loc_abs_statistical_area_3, " ", "Crash Count: ", 
+                                   the_map_data()$value)) %>%
+        clearControls() %>%
+        addLegend(pal = pal_fun_leg,
+                  values = ~value,
+                  position = "bottomright",
+                  opacity = 0.8,
+                  title = "",
+                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
+    } else{
+      leafletProxy("map",
+                   data = the_map_data()) %>%
+        clearShapes() %>%
+        addPolygons(fillColor = ~pal_fun(value),
+                    fillOpacity = 0.8,
+                    layerId = ~loc_abs_statistical_area_4,
+                    stroke = TRUE,
+                    color = "grey20",
+                    label = paste0("SA4: ", the_map_data()$loc_abs_statistical_area_4, " ", "Crash Count: ", 
+                                   the_map_data()$value)) %>%
+        clearControls() %>%
+        addLegend(pal = pal_fun_leg,
+                  values = ~value,
+                  position = "bottomright",
+                  opacity = 0.8,
+                  title = "",
+                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
+    }
+  })
+  
+ map_proxy <- leafletProxy("map")
+  
 }

@@ -103,3 +103,98 @@ model_cleaner <- function(data, data2) {
   
   return(tmp2)
 }
+
+#--------------------- MAPPING PRODUCTION --------------------------
+
+map_cleaner <- function(data) {
+  
+  # High level
+  
+  tmp1 <- data
+  
+  # Individual aggregations
+  
+  hospital <- tmp1 %>%
+    filter(crash_severity == "Hospitalisation") %>%
+    group_by(crash_year, crash_severity, loc_post_code,
+             loc_abs_statistical_area_2, loc_abs_statistical_area_3,
+             loc_abs_statistical_area_4) %>%
+    summarise(value = sum(count_casualty_hospitalised)) %>%
+    ungroup()
+  
+  fatal <- tmp1 %>%
+    filter(crash_severity == "Fatal") %>%
+    group_by(crash_year, crash_severity, loc_post_code,
+             loc_abs_statistical_area_2, loc_abs_statistical_area_3,
+             loc_abs_statistical_area_4) %>%
+    summarise(value = sum(count_casualty_fatality)) %>%
+    ungroup()
+  
+  min_inj <- tmp1 %>%
+    filter(crash_severity == "Minor injury") %>%
+    group_by(crash_year, crash_severity, loc_post_code,
+             loc_abs_statistical_area_2, loc_abs_statistical_area_3,
+             loc_abs_statistical_area_4) %>%
+    summarise(value = sum(count_casualty_minor_injury)) %>%
+    ungroup()
+  
+  medical <- tmp1 %>%
+    filter(crash_severity == "Medical treatment") %>%
+    group_by(crash_year, crash_severity, loc_post_code,
+             loc_abs_statistical_area_2, loc_abs_statistical_area_3,
+             loc_abs_statistical_area_4) %>%
+    summarise(value = sum(count_casualty_medically_treated)) %>%
+    ungroup()
+  
+  # Bind all together and return it
+  
+  tmp2 <- bind_rows(hospital, fatal, min_inj, medical)
+  
+  return(tmp2)
+}
+
+#-----------------
+# ITERATIONS
+#-----------------
+
+postcode_cleaner <- function(data){
+  map_data <- d3 %>%
+    filter(loc_post_code != "Unknown") %>%
+    mutate(loc_post_code = as.character(loc_post_code)) %>%
+    inner_join(data, by = c("loc_post_code" = "POA_CODE16"))
+  
+  st_as_sf(map_data, map_data$geometry)
+}
+
+sa2_cleaner <- function(data){
+  map_data <- d3 %>%
+    group_by(crash_year, crash_severity, loc_post_code,
+             loc_abs_statistical_area_2) %>%
+    summarise(value = sum(value)) %>%
+    ungroup() %>%
+    inner_join(data, by = c("loc_abs_statistical_area_2" = "SA2_NAME16"))
+  
+  st_as_sf(map_data, map_data$geometry)
+}
+
+sa3_cleaner <- function(data){
+  map_data <- d3 %>%
+    group_by(crash_year, crash_severity, loc_post_code,
+             loc_abs_statistical_area_3) %>%
+    summarise(value = sum(value)) %>%
+    ungroup() %>%
+    inner_join(data, by = c("loc_abs_statistical_area_3" = "SA3_NAME16"))
+  
+  st_as_sf(map_data, map_data$geometry)
+}
+
+sa4_cleaner <- function(data){
+  map_data <- d3 %>%
+    group_by(crash_year, crash_severity, loc_post_code,
+             loc_abs_statistical_area_4) %>%
+    summarise(value = sum(value)) %>%
+    ungroup() %>%
+    inner_join(data, by = c("loc_abs_statistical_area_4" = "SA4_NAME16"))
+  
+  st_as_sf(map_data, map_data$geometry)
+}
