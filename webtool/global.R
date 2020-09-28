@@ -13,6 +13,8 @@ library(mgcv)
 library(sjPlot)
 library(plotly)
 library(broom)
+library(sf)
+library(leaflet)
 
 # Turn off scientific notation
 
@@ -49,17 +51,32 @@ d_postcodes <- read_excel("data/postcodes.xlsx") %>%
          educ_occ_score = as.numeric(educ_occ_score)) %>%
   mutate(usual_resident_population = log(usual_resident_population))
 
+# Load geographies
+
+load("data/postcode_geometries.Rda")
+load("data/sa2_geometries.Rda")
+load("data/sa3_geometries.Rda")
+load("data/sa4_geometries.Rda")
+
 # Run cleaning functions
 
 d1 <- ts_cleaner(d)
 d2 <- model_cleaner(d, d_postcodes)
+d3 <- map_cleaner(d)
+
+post_1 <- postcode_cleaner(posts)
+sa2_2 <- sa2_cleaner(sa2s)
+sa3_3 <- sa3_cleaner(sa3s)
+sa4_4 <- sa4_cleaner(sa4s)
 
 # Define tab names
 
 navtab0 <- "STATISTICAL MODELLING"
 navtab1 <- "ABOUT"
+navtab2 <- "GEOSPATIAL MAPPING"
 
 # Define lists for user inputs
 
 severities <- unique(d1$crash_severity)
 years <- unique(d2$year)
+geographies <- c("Postcode", "SA2", "SA3", "SA4")
