@@ -137,9 +137,69 @@ shinyServer <- function(input, output, session) {
   # FORECAST
   #-------------------
   
-  output$forecast_mod <- renderPlot({
+  output$forecast_mod <- renderPlotly({
     
-    #
+    # Original model
+    
+    tmp1 <- d1 %>%
+      filter(crash_severity == input$ts_severity)
+    
+    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3),
+              data = tmp1,
+              family = poisson(link = "log"),
+              method = "REML")
+    
+    # Make some new data that is 2019-2021
+    
+    newdat <- data.frame(nyear = c(2019,2019,2019,2019,2019,2019,2019,2019,2019,2019,2019,2019,
+                                   2020,2020,2020,2020,2020,2020,2020,2020,2020,2020,2020,2020,
+                                   2021,2021,2021,2021,2021,2021,2021,2021,2021,2021,2021,2021),
+                         nmonth = c(1,2,3,4,5,6,7,8,9,10,11,12,
+                                    1,2,3,4,5,6,7,8,9,10,11,12,
+                                    1,2,3,4,5,6,7,8,9,10,11,12))
+    
+    # Predict counts based on model-smoothed seasonality and trend
+    # and account for link function inverse
+    
+    ilink <- family(m1)$linkinv
+    
+    newd <- cbind(newdat, as.data.frame(predict(m1, newdat, type = "link", se.fit = TRUE)))
+    newd <- transform(newd, fitted = ilink(fit), upper = ilink(fit + (2 * se.fit)),
+                      lower = ilink(fit - (2 * se.fit)))
+    
+    preds <- newd %>%
+      mutate(nmonth_adj = case_when(
+        nmonth < 10 ~ paste0("0",nmonth),
+        TRUE        ~ as.character(nmonth))) %>% 
+      mutate(date = paste0(nyear,"-",nmonth_adj,"-01")) %>% 
+      mutate(date = as.Date(date, format = "%Y-%m-%d"))
+    
+    # Render plot
+    
+    p <- tmp1 %>%
+      mutate(nmonth_adj = case_when(
+        nmonth < 10 ~ paste0("0",nmonth),
+        TRUE        ~ as.character(nmonth))) %>% 
+      mutate(date = paste0(nyear,"-",nmonth_adj,"-01")) %>% 
+      mutate(date = as.Date(date, format = "%Y-%m-%d")) %>% 
+      ggplot() +
+      geom_ribbon(data = preds, aes(x = date, ymin = lower, ymax = upper), fill = "steelblue2", alpha = 0.4) +
+      geom_line(data = preds, aes(x = date, y = fitted), colour = "steelblue2", size = 1.25, linetype = "dashed") +
+      geom_line(aes(x = date, y = value), colour = "#05445E", size = 1.25) +
+      labs(x = "Date",
+           y = "Count of Crashes") +
+      scale_y_continuous(labels = comma) +
+      theme_bw() +
+      theme(panel.grid.minor = element_blank(),
+            panel.background = element_rect(fill = alpha("white", 0.2)),
+            plot.background = element_rect(fill = alpha("white", 0.2)),
+            legend.background = element_rect(fill = alpha("white", 0.2)))
+    print(p)
+    
+    ggplotly(p) %>%
+      layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
+             paper_bgcolor = "rgba(255, 255, 255, 0.2)") %>%
+      config(displayModeBar = F)
     
   })
   
@@ -332,24 +392,10 @@ shinyServer <- function(input, output, session) {
   # Prep map data
   
   the_map_data <- reactive({
+    the_map_data <- post_1 %>%
+      filter(crash_year == input$map_year) %>%
+      filter(crash_severity == input$map_severity)
     
-    if(input$map_geog == "Postcode"){
-      the_map_data <- post_1 %>%
-        filter(crash_year == input$map_year) %>%
-        filter(crash_severity == input$map_severity)
-    } else if (input$map_geog == "SA2"){
-      the_map_data <- sa2_2 %>%
-        filter(crash_year == input$map_year) %>%
-        filter(crash_severity == input$map_severity)
-    } else if (input$map_geog == "SA3"){
-      the_map_data <- sa3_3 %>%
-        filter(crash_year == input$map_year) %>%
-        filter(crash_severity == input$map_severity)
-    } else{
-      the_map_data <- sa4_4 %>%
-        filter(crash_year == input$map_year) %>%
-        filter(crash_severity == input$map_severity)
-    }
     return(the_map_data)
   })
   
@@ -363,82 +409,25 @@ shinyServer <- function(input, output, session) {
   })
   
   observe({
-    
-    if(input$map_geog == "Postcode"){
-      leafletProxy("map",
-                   data = the_map_data()) %>%
-        clearShapes() %>%
-        addPolygons(fillColor = ~pal_fun(value),
-                    fillOpacity = 0.8,
-                    layerId = ~POA_NAME16,
-                    stroke = TRUE,
-                    color = "grey20",
-                    label = paste0("Postcode: ",the_map_data()$POA_NAME16, " ", "Crash Count: ", 
-                                   the_map_data()$value)) %>%
-        clearControls() %>%
-        addLegend(pal = pal_fun_leg,
-                  values = ~value,
-                  position = "bottomright",
-                  opacity = 0.8,
-                  title = "",
-                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
-    } else if (input$map_geog == "SA2"){
-      leafletProxy("map",
-                   data = the_map_data()) %>%
-        clearShapes() %>%
-        addPolygons(fillColor = ~pal_fun(value),
-                    fillOpacity = 0.8,
-                    layerId = ~loc_abs_statistical_area_2,
-                    stroke = TRUE,
-                    color = "grey20",
-                    label = paste0("SA2: ", the_map_data()$loc_abs_statistical_area_2, " ", "Crash Count: ", 
-                                   the_map_data()$value)) %>%
-        clearControls() %>%
-        addLegend(pal = pal_fun_leg,
-                  values = ~value,
-                  position = "bottomright",
-                  opacity = 0.8,
-                  title = "",
-                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
-    } else if (input$map_geog == "SA3"){
-      leafletProxy("map",
-                   data = the_map_data()) %>%
-        clearShapes() %>%
-        addPolygons(fillColor = ~pal_fun(value),
-                    fillOpacity = 0.8,
-                    layerId = ~loc_abs_statistical_area_3,
-                    stroke = TRUE,
-                    color = "grey20",
-                    label = paste0("SA3: ", the_map_data()$loc_abs_statistical_area_3, " ", "Crash Count: ", 
-                                   the_map_data()$value)) %>%
-        clearControls() %>%
-        addLegend(pal = pal_fun_leg,
-                  values = ~value,
-                  position = "bottomright",
-                  opacity = 0.8,
-                  title = "",
-                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
-    } else{
-      leafletProxy("map",
-                   data = the_map_data()) %>%
-        clearShapes() %>%
-        addPolygons(fillColor = ~pal_fun(value),
-                    fillOpacity = 0.8,
-                    layerId = ~loc_abs_statistical_area_4,
-                    stroke = TRUE,
-                    color = "grey20",
-                    label = paste0("SA4: ", the_map_data()$loc_abs_statistical_area_4, " ", "Crash Count: ", 
-                                   the_map_data()$value)) %>%
-        clearControls() %>%
-        addLegend(pal = pal_fun_leg,
-                  values = ~value,
-                  position = "bottomright",
-                  opacity = 0.8,
-                  title = "",
-                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
-    }
+    leafletProxy("map",
+                 data = the_map_data()) %>%
+      clearShapes() %>%
+      addPolygons(fillColor = ~pal_fun(value),
+                  fillOpacity = 0.8,
+                  layerId = ~POA_NAME16,
+                  stroke = TRUE,
+                  color = "grey20",
+                  label = paste0("Postcode: ",the_map_data()$POA_NAME16, " ", "Crash Count: ", 
+                                 the_map_data()$value)) %>%
+      clearControls() %>%
+      addLegend(pal = pal_fun_leg,
+                values = ~value,
+                position = "bottomright",
+                opacity = 0.8,
+                title = "",
+                labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
   })
   
- map_proxy <- leafletProxy("map")
+  map_proxy <- leafletProxy("map")
   
 }

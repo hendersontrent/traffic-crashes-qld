@@ -165,36 +165,3 @@ postcode_cleaner <- function(data){
   
   st_as_sf(map_data, map_data$geometry)
 }
-
-sa2_cleaner <- function(data){
-  map_data <- d3 %>%
-    group_by(crash_year, crash_severity, loc_post_code,
-             loc_abs_statistical_area_2) %>%
-    summarise(value = sum(value)) %>%
-    ungroup() %>%
-    inner_join(data, by = c("loc_abs_statistical_area_2" = "SA2_NAME16"))
-  
-  st_as_sf(map_data, map_data$geometry)
-}
-
-sa3_cleaner <- function(data){
-  map_data <- d3 %>%
-    group_by(crash_year, crash_severity, loc_post_code,
-             loc_abs_statistical_area_3) %>%
-    summarise(value = sum(value)) %>%
-    ungroup() %>%
-    inner_join(data, by = c("loc_abs_statistical_area_3" = "SA3_NAME16"))
-  
-  st_as_sf(map_data, map_data$geometry)
-}
-
-sa4_cleaner <- function(data){
-  map_data <- d3 %>%
-    group_by(crash_year, crash_severity, loc_post_code,
-             loc_abs_statistical_area_4) %>%
-    summarise(value = sum(value)) %>%
-    ungroup() %>%
-    inner_join(data, by = c("loc_abs_statistical_area_4" = "SA4_NAME16"))
-  
-  st_as_sf(map_data, map_data$geometry)
-}

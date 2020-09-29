@@ -54,9 +54,6 @@ d_postcodes <- read_excel("data/postcodes.xlsx") %>%
 # Load geographies
 
 load("data/postcode_geometries.Rda")
-load("data/sa2_geometries.Rda")
-load("data/sa3_geometries.Rda")
-load("data/sa4_geometries.Rda")
 
 # Run cleaning functions
 
@@ -65,9 +62,6 @@ d2 <- model_cleaner(d, d_postcodes)
 d3 <- map_cleaner(d)
 
 post_1 <- postcode_cleaner(posts)
-sa2_2 <- sa2_cleaner(sa2s)
-sa3_3 <- sa3_cleaner(sa3s)
-sa4_4 <- sa4_cleaner(sa4s)
 
 # Define tab names
 
@@ -79,4 +73,3 @@ navtab2 <- "GEOSPATIAL MAPPING"
 
 severities <- unique(d1$crash_severity)
 years <- unique(d2$year)
-geographies <- c("Postcode", "SA2", "SA3", "SA4")
