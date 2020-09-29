@@ -11,6 +11,7 @@ This is a web application created to enable interactive statistical modelling of
 Navigate through the app using the tabs at the top. Further details and instructions are provided on each tab. A high level overview of what each does presented below:
 
 * __STATISTICAL MODELLING__ Presents user-driven statistical analysis and modelling of time-series and cross-sectional data. Modelling is primarily centred around the use of [Generalised Additive Models](https://en.wikipedia.org/wiki/Generalized_additive_model#:~:text=In%20statistics%2C%20a%20generalized%20additive,inference%20about%20these%20smooth%20functions.).
+* __GEOSPATIAL MAPPING__ Presents user-driven exploration of postcode-level crash data in the form of an interactive map.
 
 ### What do I need to be aware of?
 

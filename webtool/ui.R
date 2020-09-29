@@ -5,34 +5,6 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                ""),
                    position = c("static-top"), windowTitle = "QLD Crash Statistical Modeller",
                    id = "page_tab",
-                   
-                   #----------------------Geospatial mapping------------------
-                   
-                   tabPanel(navtab2,
-                            fluidRow(h1("Geospatial Mapping")
-                            ),
-                            sidebarLayout(
-                              sidebarPanel(
-                                h2("Page Details"),
-                                selectInput("map_geog", "Select a geography type",
-                                            choices = geographies, selected = geographies[1]),
-                                selectInput("map_year", "Select a year",
-                                            choices = years, selected = years[8]),
-                                selectInput("map_severity", "Select a crash severity",
-                                            choices = severities, selected = severities[1]),
-                                br(),
-                                p("NOTE: SA = Statistical Area (ABS Classification)"),
-                                br(),
-                                p("Click on and hover over the map with your mouse to interact with it (you can use your trackpad or scroll wheel to zoom in and out). You may need to click on selection parameters for the map calculations to load. Please be patient - geometries can take a few seconds to calculate and the map to update")
-                              ),
-                              mainPanel(
-                                fluidRow(column(11,
-                                                shinycssloaders::withSpinner(leafletOutput("map", height = "750px"))
-                       )
-                      )
-                     )
-                    )
-                   ),
 
                    #----------------------Analysis pages---------------------            
                    tabPanel(navtab0,
@@ -44,6 +16,56 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                               h1("QLD Traffic Crash Statistical Modelling Tool")
                             ),
                             tabsetPanel(id = "analysis_tabs",
+                                        
+                                        tabPanel("Time Series",
+                                                 sidebarLayout(
+                                                   sidebarPanel(
+                                                     h2("Page Details"),
+                                                     selectInput("ts_severity", "Select a crash severity",
+                                                                 choices = severities, selected = severities[3]),
+                                                     br(),
+                                                     p("Click on and hover over the graphs with your mouse to interact with them.")
+                                                   ),
+                                                   mainPanel(
+                                                     fluidRow(column(11,
+                                                                     h3("Raw Time Series Data"),
+                                                                     br(),
+                                                                     shinycssloaders::withSpinner(plotlyOutput("raw_ts", height = "450px")),
+                                                                     br()
+                                                     )
+                                                     ),
+                                                     hr(),
+                                                     fluidRow(column(11,
+                                                                     h3("Generalised Additive Model Outputs"),
+                                                                     p("Model is a Poisson-distributed Generalised Additive Model (GAM) with a smooth term on overall trend and a smooth term on monthly seasonality. Smooth term on seasonality uses cyclic cubic spline to ensure continuity."),
+                                                                     br(),
+                                                                     htmlOutput("ts_gam_dev"),
+                                                                     br(),
+                                                     ),
+                                                     br(),
+                                                     column(5,
+                                                            h4("Trend Component"),
+                                                            shinycssloaders::withSpinner(plotlyOutput("ts_gam_trend", height = "450px"))
+                                                     ),
+                                                     column(1),
+                                                     column(5,
+                                                            h4("Seasonal Component"),
+                                                            shinycssloaders::withSpinner(plotlyOutput("ts_gam_seas", height = "450px"))
+                                                     )
+                                                     ),
+                                                     br(),
+                                                     hr(),
+                                                     fluidRow(column(11,
+                                                                     h3("Forecast Modelling"),
+                                                                     p("Forecast uses the GAM model defined above."),
+                                                                     br(),
+                                                                     shinycssloaders::withSpinner(plotlyOutput("forecast_mod", height = "450px"))
+                                            )
+                                           )
+                                          )
+                                         )
+                                        ),
+                                        
                                         tabPanel("Cross-Sectional",
                                                  sidebarLayout(
                                                    sidebarPanel(
@@ -99,58 +121,33 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                    )
                                                   )
                                                  )
-                                                ),
-                                        tabPanel("Time Series",
-                                          sidebarLayout(
-                                            sidebarPanel(
-                                              h2("Page Details"),
-                                              selectInput("ts_severity", "Select a crash severity",
-                                                          choices = severities, selected = severities[3]),
-                                              br(),
-                                              p("Click on and hover over the graphs with your mouse to interact with them.")
-                                            ),
-                                            mainPanel(
-                                              fluidRow(column(11,
-                                                              h3("Raw Time Series Data"),
-                                                              br(),
-                                                              shinycssloaders::withSpinner(plotlyOutput("raw_ts", height = "450px")),
-                                                              br()
-                                              )
-                                             ),
-                                             hr(),
-                                             fluidRow(column(11,
-                                                             h3("Generalised Additive Model Outputs"),
-                                                             p("Model is a Poisson-distributed Generalised Additive Model (GAM) with a smooth term on overall trend and a smooth term on monthly seasonality. Smooth term on seasonality uses cyclic cubic spline to ensure continuity."),
-                                                             br(),
-                                                             htmlOutput("ts_gam_dev"),
-                                                             br(),
+                                                )
+                                               )
                                               ),
-                                              br(),
-                                                      column(5,
-                                                             h4("Trend Component"),
-                                                             shinycssloaders::withSpinner(plotlyOutput("ts_gam_trend", height = "450px"))
-                                              ),
-                                                      column(1),
-                                                      column(5,
-                                                             h4("Seasonal Component"),
-                                                             shinycssloaders::withSpinner(plotlyOutput("ts_gam_seas", height = "450px"))
-                                              )
-                                             ),
-                                             br(),
-                                             hr(),
-                                             fluidRow(column(11,
-                                                             h3("Forecast Modelling"),
-                                                             p("Forecast uses the GAM model defined above."),
-                                                             br(),
-                                                             #shinycssloaders::withSpinner(plotOutput("forecast_mod", height = "450px"))
-                                                             p("COMING SOON")
-                                             )
-                                            )
-                                           )
-                                          )
-                                         )
-                                        )
-                                       ),
+                   
+                   #----------------------Geospatial mapping------------------
+                   
+                   tabPanel(navtab2,
+                            fluidRow(h1("Geospatial Mapping")
+                            ),
+                            sidebarLayout(
+                              sidebarPanel(
+                                h2("Page Details"),
+                                selectInput("map_year", "Select a year",
+                                            choices = years, selected = years[8]),
+                                selectInput("map_severity", "Select a crash severity",
+                                            choices = severities, selected = severities[1]),
+                                br(),
+                                p("Click on and hover over the map with your mouse to interact with it (you can use your trackpad or scroll wheel to zoom in and out). You may need to click on selection parameters for the map calculations to load. Please be patient - geometries can take a few seconds to calculate and the map to update")
+                              ),
+                              mainPanel(
+                                fluidRow(column(11,
+                                                shinycssloaders::withSpinner(leafletOutput("map", height = "750px"))
+                       )
+                      )
+                     )
+                    )
+                   ),
                    
                    #----------------------Help page header-------------------
                    
