@@ -28,13 +28,12 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                    ),
                                                    mainPanel(
                                                      fluidRow(column(11,
-                                                                     h3("Raw Time Series Data"),
+                                                                     h3("Forecast Modelling"),
+                                                                     p("Forecast uses the GAM model defined below"),
                                                                      br(),
-                                                                     shinycssloaders::withSpinner(plotlyOutput("raw_ts", height = "450px")),
-                                                                     br()
-                                                     )
+                                                                     shinycssloaders::withSpinner(plotlyOutput("forecast_mod", height = "450px"))
+                                                      )
                                                      ),
-                                                     hr(),
                                                      fluidRow(column(11,
                                                                      h3("Generalised Additive Model Outputs"),
                                                                      p("Model is a Poisson-distributed Generalised Additive Model (GAM) with a smooth term on overall trend and a smooth term on monthly seasonality. Smooth term on seasonality uses cyclic cubic spline to ensure continuity."),
@@ -55,13 +54,6 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                      ),
                                                      br(),
                                                      hr(),
-                                                     fluidRow(column(11,
-                                                                     h3("Forecast Modelling"),
-                                                                     p("Forecast uses the GAM model defined above."),
-                                                                     br(),
-                                                                     shinycssloaders::withSpinner(plotlyOutput("forecast_mod", height = "450px"))
-                                            )
-                                           )
                                           )
                                          )
                                         ),
