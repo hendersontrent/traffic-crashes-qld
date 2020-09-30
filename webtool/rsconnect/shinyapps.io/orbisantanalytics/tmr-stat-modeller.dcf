@@ -5,8 +5,8 @@ account: orbisantanalytics
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2887513
-bundleId: 3682146
+bundleId: 3686855
 url: https://orbisantanalytics.shinyapps.io/tmr-stat-modeller/
-when: 1601366489.61518
+when: 1601463607.70462
 asMultiple: FALSE
 asStatic: FALSE

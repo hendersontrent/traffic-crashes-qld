@@ -17,7 +17,7 @@ shinyServer <- function(input, output, session) {
       
     # Final model
     
-    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3),
+    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3) + holiday,
               data = tmp1,
               family = poisson(link = "log"),
               method = "REML")
@@ -37,7 +37,7 @@ shinyServer <- function(input, output, session) {
     
     # Final model
     
-    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3),
+    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3) + holiday,
               data = tmp1,
               family = poisson(link = "log"),
               method = "REML")
@@ -77,7 +77,7 @@ shinyServer <- function(input, output, session) {
     
     # Final model
     
-    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3),
+    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3) + holiday,
               data = tmp1,
               family = poisson(link = "log"),
               method = "REML")
@@ -106,6 +106,48 @@ shinyServer <- function(input, output, session) {
     
   })
   
+  # Extract holiday component
+  
+  output$ts_gam_hol <- renderPlotly({
+    
+    tmp1 <- d1 %>%
+      filter(crash_severity == input$ts_severity)
+    
+    # Final model
+    
+    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3) + holiday,
+              data = tmp1,
+              family = poisson(link = "log"),
+              method = "REML")
+    
+    outs <- plot_model(m1, type = "pred")
+    tmp1 <- outs$holiday$data
+    
+    p <- tmp1 %>%
+      mutate(holiday = case_when(
+        x == 1 ~ "Not School Holidays",
+        x == 2 ~ "School Holidays")) %>%
+      ggplot() +
+      geom_segment(aes(x = conf.low, xend = conf.high, y = holiday, yend = holiday), 
+                   colour = "steelblue2", alpha = 0.6, size = 4) +
+      geom_point(aes(x = predicted, y = holiday), size = 5, colour = "#05445E") +
+      labs(title = "Predicted effects",
+           x = "Number of Crashes",
+           y = NULL) +
+      scale_x_continuous(labels = comma) +
+      theme_bw() +
+      theme(panel.grid.minor = element_blank(),
+            panel.background = element_rect(fill = alpha("white", 0.2)),
+            plot.background = element_rect(fill = alpha("white", 0.2)),
+            legend.background = element_rect(fill = alpha("white", 0.2)))
+    
+    ggplotly(p) %>%
+      layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
+             paper_bgcolor = "rgba(255, 255, 255, 0.2)") %>%
+      config(displayModeBar = F)
+    
+  })
+  
   #-------------------
   # FORECAST
   #-------------------
@@ -117,7 +159,7 @@ shinyServer <- function(input, output, session) {
     tmp1 <- d1 %>%
       filter(crash_severity == input$ts_severity)
     
-    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3),
+    m1 <- gam(value ~ s(nmonth, k = 12, bs = "cc") + s(nyear, k = 3) + holiday,
               data = tmp1,
               family = poisson(link = "log"),
               method = "REML")
@@ -129,7 +171,10 @@ shinyServer <- function(input, output, session) {
                                    2021,2021,2021,2021,2021,2021,2021,2021,2021,2021,2021,2021),
                          nmonth = c(1,2,3,4,5,6,7,8,9,10,11,12,
                                     1,2,3,4,5,6,7,8,9,10,11,12,
-                                    1,2,3,4,5,6,7,8,9,10,11,12))
+                                    1,2,3,4,5,6,7,8,9,10,11,12),
+                         holiday = c(2,1,1,1,2,1,1,2,1,1,1,2,
+                                     2,1,1,1,2,1,1,2,1,1,1,2,
+                                     2,1,1,1,2,1,1,2,1,1,1,2))
     
     # Predict counts based on model-smoothed seasonality and trend
     # and account for link function inverse
