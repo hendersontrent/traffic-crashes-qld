@@ -22,7 +22,7 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                    sidebarPanel(
                                                      h2("Page Details"),
                                                      selectInput("ts_severity", "Select a crash severity",
-                                                                 choices = severities, selected = severities[3]),
+                                                                 choices = severities, selected = severities[1]),
                                                      br(),
                                                      p("Click on and hover over the graphs with your mouse to interact with them.")
                                                    ),
@@ -32,7 +32,7 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                                      p("Forecast uses the GAM model defined below"),
                                                                      br(),
                                                                      shinycssloaders::withSpinner(plotlyOutput("forecast_mod", height = "450px"))
-                                                      )
+                                                     )
                                                      ),
                                                      fluidRow(column(11,
                                                                      h3("Generalised Additive Model Outputs"),
@@ -50,13 +50,16 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                      column(5,
                                                             h4("Seasonal Component"),
                                                             shinycssloaders::withSpinner(plotlyOutput("ts_gam_seas", height = "450px"))
-                                                     )
-                                                     ),
-                                                     br(),
-                                                     hr(),
-                                          )
-                                         )
-                                        ),
+                                                    )
+                                                   ),
+                                                   fluidRow(column(10,
+                                                     h4("Holiday Component"),
+                                                     shinycssloaders::withSpinner(plotlyOutput("ts_gam_hol", height = "450px"))
+                                                    )
+                                                   )
+                                                  )
+                                                 )
+                                                ),
                                         
                                         tabPanel("Cross-Sectional",
                                                  sidebarLayout(
@@ -81,13 +84,13 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                               column(5,
                                                                      h4("Usual Resident Population"),
                                                                      shinycssloaders::withSpinner(plotlyOutput("pop_plot", height = "450px"))
-                                                                     ),
+                                                              ),
                                                               column(1),
                                                               column(5,
                                                                      h4("SEIFA Index of Occupation Education"),
                                                                      shinycssloaders::withSpinner(plotlyOutput("ses_plot", height = "450px"))
+                                                              )
                                                        )
-                                                      )
                                                      ),
                                                      br(),
                                                      fluidRow(
@@ -103,7 +106,7 @@ shinyUI(navbarPage(theme = "corp-styles.css",
                                                               column(5,
                                                                      h4("Summary of Coefficients"),
                                                                      shinycssloaders::withSpinner(tableOutput("tidy_table"))
-                                                                     ),
+                                                              ),
                                                               column(1),
                                                               column(5,
                                                                      h4("Summary of Model Fit"),

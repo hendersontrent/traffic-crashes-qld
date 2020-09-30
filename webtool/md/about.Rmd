@@ -34,6 +34,6 @@ If you have a GitHub account, you can log an issue or contribute to application 
 
 ### What are the future plans for the application?
 
-* Include more statistical models and model comparisons
-* Specify more robust and detailed time series models
-* Switch to more interactive plotting features (i.e. JavaScript-communicating libraries such as [Plotly](https://plotly.com/)).
+* Include more statistical models and model selection processes
+* Specify alternate and more detailed time series models
+* Build COVID-19 impacts into the forecast models

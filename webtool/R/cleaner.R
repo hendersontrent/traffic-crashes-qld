@@ -50,9 +50,14 @@ ts_cleaner <- function(data) {
     summarise(value = sum(count_casualty_medically_treated)) %>%
     ungroup()
   
-  # Bind all together and return it
+  # Bind all together and return it while adding school holiday indicator
   
-  tmp3 <- bind_rows(hospital, fatal, min_inj, medical)
+  the_hols <- c(5,8,12,1)
+  
+  tmp3 <- bind_rows(hospital, fatal, min_inj, medical) %>%
+    mutate(holiday = case_when(
+           nmonth %in% the_hols ~ 2,
+           TRUE                 ~ 1))
   
   return(tmp3)
 }
